@@ -16,7 +16,6 @@ const OrganizationSchema = new Schema<IOrganization>({
   createdBy: {
     type: Schema.Types.ObjectId,
     ref: "HR",
-    required: [true, "hr_id is required"]
   },
   createdAt: {
     type: Date,
