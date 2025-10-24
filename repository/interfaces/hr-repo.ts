@@ -15,4 +15,6 @@ export interface IHrRepo{
     create(data:HrDTO):Promise<IHr>;
     findByUsername(username: string): Promise<IHr | null>;
     findByEmail(email: string): Promise<IHr | null>;
+    findByUsernameOrEmail(identifier:string):Promise<IHr|null>;
+    deleteById(id:string):Promise<boolean>;
 }

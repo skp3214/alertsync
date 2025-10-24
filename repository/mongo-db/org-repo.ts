@@ -13,4 +13,9 @@ export class OrgRepositoryMongo implements IOrgRepo {
     async updateCreatedBy(orgId: Types.ObjectId, hrId: Types.ObjectId): Promise<void> {
         await dbClient.OrganizationModel.updateOne({ _id: orgId }, { createdBy: hrId });
     }
+
+    async deleteById(id: string): Promise<boolean> {
+        const result = await dbClient.OrganizationModel.deleteOne({ _id: id });
+        return result.deletedCount === 1;
+    }
 }

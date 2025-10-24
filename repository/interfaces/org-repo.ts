@@ -9,4 +9,5 @@ export type OrgDTO = {
 export interface IOrgRepo {
     create(data: OrgDTO): Promise<IOrganization>;
     updateCreatedBy(orgId: Types.ObjectId, hrId: Types.ObjectId): Promise<void>;
+    deleteById(id: string): Promise<boolean>;
 }
