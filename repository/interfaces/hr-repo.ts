@@ -17,4 +17,5 @@ export interface IHrRepo{
     findByEmail(email: string): Promise<IHr | null>;
     findByUsernameOrEmail(identifier:string):Promise<IHr|null>;
     deleteById(id:string):Promise<boolean>;
+    updateOtpDetails(hrId:Types.ObjectId, otpCode:string, otpExpiresAt:Date):Promise<boolean>;
 }

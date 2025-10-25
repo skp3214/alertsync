@@ -5,6 +5,7 @@ import { getEmailBody } from "@/lib/constants";
 import { HrDTO, IHrRepo } from "@/repository/interfaces/hr-repo";
 import { IOrgRepo } from "@/repository/interfaces/org-repo";
 import bcrypt from "bcryptjs";
+import { Types } from "mongoose";
 
 export class HrService {
     constructor(
@@ -110,5 +111,14 @@ export class HrService {
     async checkUsernameOrEmail(identifier: string) {
         const hr = await this.hrRepo.findByUsernameOrEmail(identifier);
         return hr;
+    }
+
+    async updateOtpDetails(hrId: Types.ObjectId, otpCode: string, otpExpiresAt: Date) {
+        const result = await this.hrRepo.updateOtpDetails(
+            hrId,
+            otpCode,
+            otpExpiresAt
+        );
+        return result;
     }
 }

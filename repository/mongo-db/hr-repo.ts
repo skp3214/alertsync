@@ -1,8 +1,17 @@
 import { IHr } from "@/databases/mongo-db/models/hr.model";
 import { HrDTO, IHrRepo } from "../interfaces/hr-repo";
 import { dbClient } from "@/databases/db";
+import { Types } from "mongoose";
 
 export class HrRepositoryMongo implements IHrRepo {
+    
+    async updateOtpDetails(hrId: Types.ObjectId, otpCode: string, otpExpiresAt: Date): Promise<boolean> {
+        const result = await dbClient.HrModel.updateOne(
+            { _id: hrId },
+            { otpCode, otpExpiresAt }
+        );
+        return result.modifiedCount === 1;
+    }
     async findByUsernameOrEmail(identifier: string): Promise<IHr | null> {
         const hr = await dbClient.HrModel.findOne({
             $or: [

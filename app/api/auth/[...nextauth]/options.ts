@@ -1,5 +1,5 @@
-import { dbClient, initDB } from "@/databases/db";
-import { NodeMailerService } from "@/email/nodemailer/email-service";
+import { initDB } from "@/databases/db";
+import { IHr } from "@/databases/mongo-db/models/hr.model";
 import { HrRepositoryMongo } from "@/repository/mongo-db/hr-repo";
 import { HrService } from "@/service/hr-service";
 import bcrypt from "bcryptjs";
@@ -18,39 +18,14 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials: any): Promise<any> {
                 await initDB();
                 const hrService = new HrService(new HrRepositoryMongo());
-                const emailService = new NodeMailerService();
 
                 try {
-                    const user = await hrService.checkUsernameOrEmail(credentials.identifier);
+                    const user = await hrService.checkUsernameOrEmail(credentials.identifier) as IHr;
 
-                    if (!user) {
-                        throw new Error(`No user found with this ${credentials.identifier}`);
-                    }
-                    
                     const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
                     if (!isPasswordCorrect) {
                         throw new Error('Invalid Password');
                     }
-
-                    if (!user.emailVerified && user.otpExpiresAt && user.otpExpiresAt < new Date()) {
-                        const newOtp = Math.floor(100000 + Math.random() * 900000).toString();
-                        await dbClient.HrModel.updateOne(
-                            { _id: user._id },
-                            { otpCode: newOtp, otpExpiresAt: new Date(Date.now() + 10 * 60 * 1000) }
-                        );
-                        const emailBody = `Your OTP code is: ${newOtp}. It will expire in 10 minutes.`;
-                        await emailService.sendOTP({
-                            to: user.email,
-                            subject: 'Your New OTP Code - AlertSync',
-                            body: emailBody
-                        });
-                        throw new Error('OTP has expired. A new OTP has been sent to your email.');
-                    }
-
-                    if (!user.emailVerified) {
-                        throw new Error('Please verify your email to proceed. Enter the OTP sent to your email.');
-                    }
-
 
                     return user;
                 } catch (error) {
